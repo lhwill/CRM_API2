@@ -7,11 +7,14 @@ using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace CRM_API.Controllers
 {
+    //改变响应格式
+    [Produces("application/json", "application/xml")]
     [Route("api/[controller]")]
-    [ApiController]
+    // [ApiController]
     [EnableCors("cors")]//设置跨域处理的代理
     public class BaseInfoController : ControllerBase
     {
@@ -23,8 +26,8 @@ namespace CRM_API.Controllers
         /// </summary>
         /// <param name="em"></param>
         /// <returns></returns>
-        [HttpPost]
-        public async Task<ActionResult<int>> AddEMp(EmployeeInfo em)
+        [HttpPost("AddEmp")]
+        public async Task<ActionResult<int>> AddEMp([FromBody]EmployeeInfo em)
         {
 
             db.EmployeeInfo.Add(em);
@@ -38,15 +41,40 @@ namespace CRM_API.Controllers
         /// <param name="em"></param>
         /// <returns></returns>
         [HttpPut]
-        public async Task<IActionResult> UpdateEMp(EmployeeInfo em)
+        [Route("UptEmp")]
+        public async Task<ActionResult<int>> UpdateEMp([FromBody]EmployeeInfo em)
         {
+            //db.EmployeeInfo.AsNoTracking();
+            //db.Entry(em).State = EntityState.Modified;
+            //int task= await db.SaveChangesAsync();
+            //db.Entry(em).State = EntityState.Deleted;
+            //return task;
+
+
 
             db.Entry(em).State = EntityState.Modified;
-            await db.SaveChangesAsync();
-            return NoContent();
+            return await db.SaveChangesAsync();
+
 
         }
 
+        /// <summary>
+        /// 删除员工
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpDelete]
+        public async Task<ActionResult<int>> RemoveEMp(int id)
+        {
+            db.EmployeeInfo.Remove(db.EmployeeInfo.FirstOrDefault(m => m.EId == id));
+            return await db.SaveChangesAsync();
+
+        }
+        [Route("GetEmpJsonP")]
+        public ActionResult GetEmp1(string cbEmp)
+        {
+            return Content(cbEmp + "(" + JsonConvert.SerializeObject(db.EmployeeInfo.ToList()) + ")");
+        }
         /// <summary>
         /// 获取所有员工
         /// </summary>
@@ -54,9 +82,7 @@ namespace CRM_API.Controllers
         [Route("GetEmp")]
         public async Task<ActionResult<IEnumerable<EmployeeInfo>>> GetEmp()
         {
-
             return await db.EmployeeInfo.ToListAsync();
-
         }
 
         /// <summary>
@@ -69,7 +95,7 @@ namespace CRM_API.Controllers
         public async Task<ActionResult<EmployeeInfo>> GetEmpLogin(string name, string pwd)
         {
 
-            return await db.EmployeeInfo.FirstOrDefaultAsync(e => e.ENO.Equals(name) && e.Password.Equals(pwd));
+            return await db.EmployeeInfo.AsNoTracking().FirstOrDefaultAsync(e => e.ENO.Equals(name) && e.Password.Equals(pwd));
         }
 
         /// <summary>

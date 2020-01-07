@@ -19,28 +19,7 @@ namespace CRM_API.Model
         public CRMContext() { }
         public CRMContext(DbContextOptions<CRMContext> options):base(options) { }
 
-        /// <summary>
-        /// 重写基类，指定连接字符串
-        /// </summary>
-        /// <param name="optionsBuilder"></param>
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
 
-            if (!optionsBuilder.IsConfigured)
-            {
-                //读取json配置文件的字符串的方法（也可以在startup中，项目启动运行时获取）
-                var builder = new ConfigurationBuilder().AddJsonFile("appsettings.json");
-                var config = builder.Build();
-                string connStr = config["ConnectionStrings:DefaultConnection"];
-
-                optionsBuilder.UseSqlServer(connStr);
-            }
-           
-        }
-
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-        }
 
         public DbSet<Base_Dictionary> Base_Dictionary { get; set; }
         public DbSet<Buy_Product> Buy_Product { get; set; }
@@ -57,5 +36,6 @@ namespace CRM_API.Model
         public DbSet<RoleInfo> RoleInfo { get; set; }
         public DbSet<RoleMenu> RoleMenu { get; set; }
         public DbSet<Sale_Chance> Sale_Chance { get; set; }
+        public DbSet<Student> Student { get; set; }
     }
 }

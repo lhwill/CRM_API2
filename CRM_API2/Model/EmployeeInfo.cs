@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace CRM_API.Model
 {
+   
     public class EmployeeInfo
     {
         [Key]
@@ -14,7 +15,7 @@ namespace CRM_API.Model
         public string Password { get; set; }
         public string EName { get; set; }
         public string IDCard { get; set; }
-        public int DID { get; set; }
+        public int? DID { get; set; }
         public bool Sex { get; set; }
         public string Phone { get; set; }
 
